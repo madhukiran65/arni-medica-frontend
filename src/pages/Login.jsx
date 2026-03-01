@@ -6,6 +6,7 @@ import { loginSchema } from '../validation/schemas'
 import { AuthContext } from '../contexts/AuthContext'
 import { Shield, Eye, EyeOff } from 'lucide-react'
 import FormField from '../components/common/FormField'
+import { notify } from '../utils/toast'
 
 export default function Login() {
   const { login } = useContext(AuthContext)
@@ -24,9 +25,12 @@ export default function Login() {
     setLoading(true)
     try {
       await login(data.username, data.password)
+      notify.success('Signed in successfully')
       navigate('/')
     } catch (err) {
-      setServerError(err.message || err.response?.data?.detail || 'Invalid credentials. Please try again.')
+      const msg = err.message || err.response?.data?.detail || 'Invalid credentials. Please try again.'
+      setServerError(msg)
+      notify.error(msg)
     } finally {
       setLoading(false)
     }
