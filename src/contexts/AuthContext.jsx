@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react'
 import { authAPI } from '../api'
+import { hasPermission as checkPermission, hasAnyPermission as checkAnyPermission } from '../utils/rbac'
 
 export const AuthContext = createContext(null)
 
@@ -77,11 +78,21 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
+  const hasPermission = useCallback((permission) => {
+    return checkPermission(user, permission)
+  }, [user])
+
+  const hasAnyPermission = useCallback((permissions) => {
+    return checkAnyPermission(user, permissions)
+  }, [user])
+
   return (
     <AuthContext.Provider value={{
       user, loading, login, logout,
       isAuthenticated: !!user,
-      loginError
+      loginError,
+      hasPermission,
+      hasAnyPermission,
     }}>
       {children}
     </AuthContext.Provider>

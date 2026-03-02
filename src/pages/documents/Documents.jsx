@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Plus, Search, Filter, Download } from 'lucide-react'
+import PermissionGate from '../../components/common/PermissionGate'
 
 export default function Documents() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -34,10 +35,20 @@ export default function Documents() {
             <Filter size={18} />
             Filter
           </button>
-          <button className="btn-primary flex items-center gap-2">
-            <Plus size={18} />
-            New Document
-          </button>
+          <PermissionGate
+            permission="can_create_documents"
+            fallback={
+              <button className="btn-primary flex items-center gap-2 opacity-50 cursor-not-allowed" disabled>
+                <Plus size={18} />
+                New Document
+              </button>
+            }
+          >
+            <button className="btn-primary flex items-center gap-2">
+              <Plus size={18} />
+              New Document
+            </button>
+          </PermissionGate>
         </div>
 
         <div className="overflow-x-auto">
