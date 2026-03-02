@@ -31,6 +31,8 @@ export default defineConfig({
             '@tiptap/extension-link', '@tiptap/extension-highlight',
             '@tiptap/extension-table', '@tiptap/extension-table-row',
             '@tiptap/extension-table-cell', '@tiptap/extension-table-header',
+            '@tiptap/extension-font-family', '@tiptap/extension-color',
+            '@tiptap/extension-text-style', '@tiptap/extension-horizontal-rule',
           ],
         },
       },

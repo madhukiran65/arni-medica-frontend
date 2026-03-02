@@ -9,6 +9,13 @@
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  
+  .ProseMirror {
+    font-family: 'Calibri', 'Segoe UI', sans-serif;
+    font-size: 11pt;
+    line-height: 1.15;
+    color: #1a1a1a;
+  }
 }
 
 @layer components {

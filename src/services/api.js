@@ -289,6 +289,29 @@ export const trainingAPI = {
   getCompetencies: (params) => api.get('/training/competencies/', { params }),
   getCompetency: (id) => api.get(`/training/competencies/${id}/`),
 
+  // Quizzes
+  getQuizzes: (params) => api.get('/training/quizzes/', { params }),
+  getQuiz: (id) => api.get(`/training/quizzes/${id}/`),
+  createQuiz: (data) => api.post('/training/quizzes/', data),
+  updateQuiz: (id, data) => api.patch(`/training/quizzes/${id}/`, data),
+  deleteQuiz: (id) => api.delete(`/training/quizzes/${id}/`),
+  getQuizForTaking: (id) => api.get(`/training/quizzes/${id}/take/`),
+  startAttempt: (id) => api.post(`/training/quizzes/${id}/start_attempt/`),
+  submitAttempt: (id, data) => api.post(`/training/quizzes/${id}/submit_attempt/`, data),
+  getMyAttempts: () => api.get('/training/quizzes/my_attempts/'),
+
+  // Quiz Questions
+  getQuizQuestions: (params) => api.get('/training/quiz-questions/', { params }),
+  createQuizQuestion: (data) => api.post('/training/quiz-questions/', data),
+  updateQuizQuestion: (id, data) => api.patch(`/training/quiz-questions/${id}/`, data),
+  deleteQuizQuestion: (id) => api.delete(`/training/quiz-questions/${id}/`),
+
+  // Quiz Answers
+  getQuizAnswers: (params) => api.get('/training/quiz-answers/', { params }),
+  createQuizAnswer: (data) => api.post('/training/quiz-answers/', data),
+  updateQuizAnswer: (id, data) => api.patch(`/training/quiz-answers/${id}/`, data),
+  deleteQuizAnswer: (id) => api.delete(`/training/quiz-answers/${id}/`),
+
   // Dashboard & Compliance
   getDashboard: () => api.get('/training/dashboard/'),
   getCompliance: () => api.get('/training/compliance/'),
