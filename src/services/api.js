@@ -129,23 +129,6 @@ export const documentRelationshipsAPI = {
   byDocument: (docId) => api.get(`/documents/relationships/by-document/${docId}/`),
 };
 
-export const controlledCopiesAPI = {
-  getAll: (params) => api.get('/documents/controlled-copies/', { params }),
-  get: (id) => api.get(`/documents/controlled-copies/${id}/`),
-  create: (data) => api.post('/documents/controlled-copies/', data),
-  update: (id, data) => api.patch(`/documents/controlled-copies/${id}/`, data),
-  delete: (id) => api.delete(`/documents/controlled-copies/${id}/`),
-  recallAll: (docId) => api.post(`/documents/controlled-copies/${docId}/recall_all/`),
-};
-
-export const workflowStepsAPI = {
-  getAll: (params) => api.get('/documents/workflow-steps/', { params }),
-  get: (id) => api.get(`/documents/workflow-steps/${id}/`),
-  create: (data) => api.post('/documents/workflow-steps/', data),
-  update: (id, data) => api.patch(`/documents/workflow-steps/${id}/`, data),
-  delete: (id) => api.delete(`/documents/workflow-steps/${id}/`),
-  byDocument: (docId) => api.get(`/documents/workflow-steps/by-document/${docId}/`),
-};
 
 export const periodicReviewsAPI = {
   getAll: (params) => api.get('/documents/periodic-reviews/', { params }),
@@ -154,7 +137,20 @@ export const periodicReviewsAPI = {
   update: (id, data) => api.patch(`/documents/periodic-reviews/${id}/`, data),
   delete: (id) => api.delete(`/documents/periodic-reviews/${id}/`),
   overdue: () => api.get('/documents/periodic-reviews/overdue/'),
-  triggerReviews: () => api.post('/documents/periodic-reviews/trigger_reviews/'),
+  completeReview: (id, data) => api.post(`/documents/periodic-reviews/${id}/complete_review/`, data),
+  scheduleNext: (id) => api.post(`/documents/periodic-reviews/${id}/schedule_next/`),
+};
+
+export const controlledCopiesAPI = {
+  getAll: (params) => api.get('/documents/controlled-copies/', { params }),
+  get: (id) => api.get(`/documents/controlled-copies/${id}/`),
+  create: (data) => api.post('/documents/controlled-copies/', data),
+  update: (id, data) => api.patch(`/documents/controlled-copies/${id}/`, data),
+  delete: (id) => api.delete(`/documents/controlled-copies/${id}/`),
+  issue: (id, data) => api.post(`/documents/controlled-copies/${id}/issue/`, data),
+  confirmReceipt: (id, data) => api.post(`/documents/controlled-copies/${id}/confirm_receipt/`, data),
+  supersede: (id) => api.post(`/documents/controlled-copies/${id}/supersede/`),
+  recall: (id, data) => api.post(`/documents/controlled-copies/${id}/recall/`, data),
 };
 
 export const documentAccessLogsAPI = {
@@ -635,6 +631,17 @@ export const validationAPI = {
   },
 };
 
+export const correspondenceAPI = {
+  list: (params) => api.get('/documents/correspondence/', { params }),
+  get: (id) => api.get(`/documents/correspondence/${id}/`),
+  create: (data) => api.post('/documents/correspondence/', data),
+  update: (id, data) => api.patch(`/documents/correspondence/${id}/`, data),
+  delete: (id) => api.delete(`/documents/correspondence/${id}/`),
+  acknowledge: (id) => api.post(`/documents/correspondence/${id}/acknowledge/`),
+  close: (id) => api.post(`/documents/correspondence/${id}/close/`),
+  markActionRequired: (id) => api.post(`/documents/correspondence/${id}/mark_action_required/`),
+  getOverdue: (params) => api.get('/documents/correspondence/overdue/', { params }),
+};
 export const feedbackAPI = {
   getAll: (params) => api.get('/feedback/tickets/', { params }),
   get: (id) => api.get(`/feedback/tickets/${id}/`),

@@ -12,6 +12,7 @@ import Dashboard from './pages/dashboard/Dashboard'
 // Lazy-loaded module pages (code splitting — reduces initial bundle)
 const Documents = lazy(() => import('./pages/documents/Documents'))
 const Labeling = lazy(() => import('./pages/documents/Labeling'))
+const DocumentManagement = lazy(() => import('./pages/documents/DocumentManagement'))
 const Forms = lazy(() => import('./pages/documents/Forms'))
 const DMR = lazy(() => import('./pages/documents/DMR'))
 const Validation = lazy(() => import('./pages/documents/Validation'))
@@ -148,6 +149,11 @@ export default function App() {
         <Route path="documents/labeling" element={
           <Suspense fallback={<PageLoader />}>
             <RBACRoute permission="can_view_documents"><Labeling /></RBACRoute>
+          </Suspense>
+        } />
+        <Route path="documents/management" element={
+          <Suspense fallback={<PageLoader />}>
+            <RBACRoute permission="can_view_documents"><DocumentManagement /></RBACRoute>
           </Suspense>
         } />
         <Route path="documents/forms" element={
