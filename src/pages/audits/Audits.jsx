@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Plus, Search, Eye, Shield } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
+import { useNavigate } from 'react-router-dom'
 import { auditsAPI } from '../../api'
-import { auditCreateSchema } from '../../validation/schemas'
 import StatusBadge from '../../components/common/StatusBadge'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import EmptyState from '../../components/common/EmptyState'
 import Pagination from '../../components/common/Pagination'
-import Modal from '../../components/common/Modal'
-import FormField from '../../components/common/FormField'
 
 export default function Audits() {
   const [audits, setAudits] = useState([])
@@ -17,8 +13,7 @@ export default function Audits() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
-  const [selected, setSelected] = useState(null)
-  const [showCreate, setShowCreate] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => { fetchAudits() }, [page, search])
 
@@ -32,16 +27,6 @@ export default function Audits() {
       console.error('Failed to load audits:', err)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleCreate = async (formData) => {
-    try {
-      await auditsAPI.create(formData)
-      setShowCreate(false)
-      fetchAudits()
-    } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to create audit')
     }
   }
 
@@ -64,7 +49,7 @@ export default function Audits() {
               onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             />
           </div>
-          <button onClick={() => setShowCreate(true)} className="btn-primary flex items-center gap-2">
+          <button onClick={() => navigate('/audits/create')} className="btn-primary flex items-center gap-2">
             <Plus size={18} /> New Audit
           </button>
         </div>
@@ -95,16 +80,18 @@ export default function Audits() {
                       <td className="py-3 px-4 font-medium">{a.title}</td>
                       <td className="py-3 px-4 text-slate-400">{a.audit_type || '—'}</td>
                       <td className="py-3 px-4">
-                        <StatusBadge status={a.status} />
+                        <StatusBadge status={a.current_stage} />
                       </td>
                       <td className="py-3 px-4 text-slate-400">{a.lead_auditor_name || '—'}</td>
-                      <td className="py-3 px-4 text-slate-400">{a.scheduled_date || a.start_date || '—'}</td>
+                      <td className="py-3 px-4 text-slate-400 text-xs">
+                        {new Date(a.planned_start_date).toLocaleDateString()}
+                      </td>
                       <td className="py-3 px-4">
-                        <button 
-                          onClick={() => setSelected(a)}
-                          className="p-2 rounded hover:bg-slate-700 transition"
+                        <button
+                          onClick={() => navigate(`/audits/${a.id}`)}
+                          className="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition"
                         >
-                          <Eye size={16} className="text-slate-400" />
+                          <Eye size={16} /> View
                         </button>
                       </td>
                     </tr>
@@ -112,87 +99,18 @@ export default function Audits() {
                 </tbody>
               </table>
             </div>
-            <Pagination page={page} totalCount={totalCount} onPageChange={setPage} />
+            {totalCount > 10 && (
+              <div className="mt-4">
+                <Pagination
+                  currentPage={page}
+                  totalPages={Math.ceil(totalCount / 10)}
+                  onPageChange={setPage}
+                />
+              </div>
+            )}
           </>
         )}
       </div>
-
-      {/* Create Modal */}
-      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Create Audit" size="lg">
-        <CreateAuditForm onSubmit={handleCreate} onCancel={() => setShowCreate(false)} />
-      </Modal>
-
-      {/* Detail Modal */}
-      <Modal isOpen={!!selected} onClose={() => setSelected(null)} title={selected?.title || 'Audit Detail'} size="lg">
-        {selected && (
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <span className="text-xs text-slate-500">Audit ID</span>
-              <p className="font-mono text-blue-400">{selected.audit_id || selected.id}</p>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Status</span>
-              <p><StatusBadge status={selected.status} /></p>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Type</span>
-              <p className="text-sm">{selected.audit_type || '—'}</p>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Date</span>
-              <p className="text-sm">{selected.scheduled_date || selected.start_date || '—'}</p>
-            </div>
-            <div>
-              <span className="text-xs text-slate-500">Lead Auditor</span>
-              <p className="text-sm">{selected.lead_auditor_name || '—'}</p>
-            </div>
-            {selected.description && (
-              <div className="col-span-2">
-                <span className="text-xs text-slate-500">Description</span>
-                <p className="text-sm text-slate-300 mt-1">{selected.description}</p>
-              </div>
-            )}
-          </div>
-        )}
-      </Modal>
     </div>
-  )
-}
-
-function CreateAuditForm({ onSubmit, onCancel }) {
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(auditCreateSchema),
-    defaultValues: { title: '', audit_type: 'internal', scope: '', planned_start_date: '', planned_end_date: '' },
-    mode: 'onBlur',
-  })
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      <FormField label="Title" error={errors.title?.message} required>
-        <input {...register('title')} className={`input-field ${errors.title ? 'border-red-500/50' : ''}`} placeholder="Enter audit title" />
-      </FormField>
-      <FormField label="Audit Type" error={errors.audit_type?.message} required>
-        <select {...register('audit_type')} className="input-field">
-          <option value="">Select type</option>
-          <option value="internal">Internal</option>
-          <option value="external">External</option>
-          <option value="supplier">Supplier</option>
-          <option value="regulatory">Regulatory</option>
-        </select>
-      </FormField>
-      <FormField label="Scope" error={errors.scope?.message} required>
-        <input {...register('scope')} className={`input-field ${errors.scope ? 'border-red-500/50' : ''}`} placeholder="Enter audit scope" />
-      </FormField>
-      <FormField label="Planned Start Date" error={errors.planned_start_date?.message} required>
-        <input type="date" {...register('planned_start_date')} className={`input-field ${errors.planned_start_date ? 'border-red-500/50' : ''}`} />
-      </FormField>
-      <FormField label="Planned End Date" error={errors.planned_end_date?.message} required>
-        <input type="date" {...register('planned_end_date')} className={`input-field ${errors.planned_end_date ? 'border-red-500/50' : ''}`} />
-      </FormField>
-      <div className="flex justify-end gap-2 pt-4 border-t border-eqms-border">
-        <button type="button" onClick={onCancel} className="btn-secondary">Cancel</button>
-        <button type="submit" className="btn-primary">Create Audit</button>
-      </div>
-    </form>
   )
 }

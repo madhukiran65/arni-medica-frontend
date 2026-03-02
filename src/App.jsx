@@ -29,6 +29,7 @@ const Training = lazy(() => import('./pages/training/Training'))
 const Succession = lazy(() => import('./pages/training/Succession'))
 
 const Audits = lazy(() => import('./pages/audits/Audits'))
+const AuditDetail = lazy(() => import('./pages/audits/AuditDetail'))
 const AuditReadiness = lazy(() => import('./pages/audits/Readiness'))
 const RegulatorySubmissions = lazy(() => import('./pages/regulatory/Submissions'))
 const RegulatoryIntelligence = lazy(() => import('./pages/regulatory/Intelligence'))
@@ -228,6 +229,11 @@ export default function App() {
         <Route path="audits/readiness" element={
           <Suspense fallback={<PageLoader />}>
             <RBACRoute permission="can_view_audits"><AuditReadiness /></RBACRoute>
+          </Suspense>
+        } />
+        <Route path="audits/:auditId" element={
+          <Suspense fallback={<PageLoader />}>
+            <RBACRoute permission="can_view_audits"><AuditDetail /></RBACRoute>
           </Suspense>
         } />
         <Route path="regulatory/submissions" element={
